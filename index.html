@@ -65,22 +65,38 @@
             " Time to test the code ! Share your Odoo Project URL and let the magic begin. 🌟"</h1>
           
           
-          <form class="needs-validation" novalidate>
-            <div class="mb-3">
-              <label for="urlInput" class="form-label" style="color: white;">Enter your Git Repository :</label>
-                <div class="input-group">
-                    <input type="url" class="form-control" id="urlInput" placeholder="https://github.com/username/repository-name
-                    " required>
-                    <button type="button" class="btn btn-primary btn-analyse">Analyse</button>
-                </div>
-                <div class="invalid-feedback">
-                    Please provide a valid URL.
-                </div>
-            </div>
-            
+            <form class="needs-validation" novalidate action="/submitform" method="post">
+              <div class="mb-3">
+                  <label for="urlInput" class="form-label" style="color: white;">Enter your Git Repository :</label>
+                  <div class="input-group">
+                      <input type="url" class="form-control" id="urlInput" name="urlInput" placeholder="https://github.com/username/repository-name" required>
+                      <button type="button" class="btn btn-primary btn-analyse" onclick="submitForm()">Analyse</button>
+                  </div>
+                  <div class="invalid-feedback">
+                      Please provide a valid URL.
+                  </div>
+              </div>
+          </form>
+          
+          <script>
+              function submitForm() {
+                  const urlInput = document.getElementById("urlInput").value;
+                  const data = { urlInput };
+          
+                  fetch('/submit-form', {
+                      method: 'POST',
+                  })
+                  .then(data => {
+                      console.log('Success:', urlInput);
+                      // Handle the response as needed
+                  })
+                  .catch((error) => {
+                      console.error('Error:', error);
+                  });
+              }
+          </script>
+          
 
-        
-        </form>
         
         </div>
 
@@ -94,9 +110,6 @@
   </section>
 
   <main id="main">
-
-    <!-- ======= Clients Section ======= -->
-    
 
     <!-- ======= About Us Section ======= -->
     <section id="about" class="about">
