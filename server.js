@@ -2,23 +2,31 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = 5500; // Change this to your desired port
+const port = 5500;
 
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true }));
+// Parse JSON bodies (as sent by API clients)
+app.use(bodyParser.json());
 
-app.post('/submit-form', (req, res) => {
-  // Extract Git repository URL from the request body
-  const gitRepoUrl = req.body.urlInput;
+app.use(express.static(__dirname));
 
-  // Log the Git repository URL to the console
-  console.log(`Git Repository URL: ${gitRepoUrl}`);
 
-  // Add your logic here to trigger Jenkins build or any other action
-  // For demonstration purposes, we'll respond with a success message
-  res.json({ success: true, message: 'Form submitted successfully!' });
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
 });
 
+
+app.post('/submit-form', (req, res) => {
+    const urlInput = req.body.urlInput;
+    console.log('Received URL:', urlInput);
+
+    
+    res.json({ message: 'Data received successfully!',
+  data : urlInput 
+  
+  });
+});
+
+// Start the Express server
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+    console.log(`Server running at http://localhost:${port}`);
 });
