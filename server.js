@@ -18,23 +18,41 @@ app.post('/submit-form', async (req, res) => {
     const urlInput = req.body.urlInput;
     console.log('Received URL:', urlInput);
 
-    // Update with your Jenkins job URL and token
-    const jenkinsUrl = 'http://localhost:8080/job/CloneJob/buildWithParameters?token=111c969c32614ffe81093010cec04b6cfd';
+    // Jenkins job URL
+    const jenkinsJobUrl = 'http://localhost:8080/job/Clonejob/buildWithParameters';
 
     try {
-        const jenkinsResponse = await axios.post(jenkinsUrl, null, {
-            headers: {
-                'Authorization': 'Basic ' + Buffer.from('hamzalazigheb:' + '111c969c32614ffe81093010cec04b6cfd').toString('base64'),
-            },
-            params: {
-                urlParameter: urlInput,
+        // Fetch Jenkins crumb
+        const crumbResponse = await axios.get('http://localhost:8080/crumbIssuer/api/json', {
+            auth: {
+                username: 'hamzalazigheb',
+                password: '110c4a22d4f3533f341d7f6378fddc3fdd', // API TOKEN
             },
         });
 
-        console.log('Jenkins job triggered successfully:', jenkinsResponse.data);
-        res.json({ message: 'Data received successfully!', data: urlInput });
+        // Trigger Jenkins job with REPO_URL parameter and crumb
+        const response = await axios.post(jenkinsJobUrl, null, {
+            params: {
+                REPO_URL: urlInput,
+            },
+            headers: {
+                'Jenkins-Crumb': crumbResponse.data.crumb,
+            },
+            auth: {
+                username: 'hamzalazigheb',
+                password: '110c4a22d4f3533f341d7f6378fddc3fdd', 
+            },
+        });
+
+        console.log('Jenkins job triggered successfully:', response.data);
+
+        res.json({
+            message: 'Data received successfully!',
+            data: urlInput,
+            jenkinsResponse: response.data,
+        });
     } catch (error) {
-        console.error('Error triggering Jenkins job:', error.message);
+        console.error('Error triggering Jenkins job:', error.response ? error.response.data : error.message);
         res.status(500).json({ error: 'Failed to trigger Jenkins job' });
     }
 });
@@ -42,4 +60,4 @@ app.post('/submit-form', async (req, res) => {
 // Start the Express server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
-});
+}) ;
