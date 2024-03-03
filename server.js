@@ -30,7 +30,7 @@ app.post('/submit-form', async (req, res) => {
             },
         });
 
-        // Trigger Jenkins job with REPO_URL parameter and crumb
+        // Trigger Jenkins job with REPO_URL parameter annd crumb
         const response = await axios.post(jenkinsJobUrl, null, {
             params: {
                 REPO_URL: urlInput,
