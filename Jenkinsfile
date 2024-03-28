@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     environment {
-        SONAR_TOKEN = credentials('jenkins-sonar')
-        NODEJS_HOME = tool 'nodejs'
+        SONAR_TOKEN = credentials('sonarqube_token')
+        MAVEN_HOME = tool 'maven'
     }
     
     stages {
@@ -14,17 +14,10 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
-            }
-        }
-        
-        stage('Run Tests') {
-            steps {
-                echo 'Running tests...'
-                sh 'npm test'
+                echo 'Building project...'
+                sh "${MAVEN_HOME}/bin/mvn clean install"
             }
         }
         
@@ -32,7 +25,7 @@ pipeline {
             steps {
                 echo 'Running SonarQube analysis...'
                 withSonarQubeEnv('SonarQube Server') {
-                    sh "${NODEJS_HOME}/bin/node sonar-scanner -Dsonar.login=$SONAR_TOKEN"
+                    sh "${MAVEN_HOME}/bin/mvn sonar:sonar -Dsonar.login=$SONAR_TOKEN"
                 }
             }
         }
