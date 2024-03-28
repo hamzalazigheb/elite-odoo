@@ -1,7 +1,7 @@
 pipeline {
     agent any
     
-    environment {
+    options {
         SONAR_TOKEN = credentials('jenkins-sonar')
     }
     
@@ -30,25 +30,13 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                withSonarQubeEnv('SonarQube Server') {
-                    sh 'sonar-scanner -Dsonar.login=$SONAR_TOKEN'
+                withSonarQubeEnv(installationName:'jenkins-sonar') {
+                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                 }
             }
         }
     }
     
-    post {
-        always {
-            echo 'Cleaning up...'
-        }
-        
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
+    
 }
 
