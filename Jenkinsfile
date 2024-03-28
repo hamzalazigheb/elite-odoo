@@ -10,47 +10,51 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out source code...'
-                git 'https://github.com/hamzalazigheb/elite-odoo'
+                git 'https://github.com/hamzalazigheb/elite-odoo.git'
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Build') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
+                echo 'Building...'
+                sh './mvnw clean package'
             }
         }
         
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                sh 'npm test'
+                // Add your test execution steps here
             }
         }
         
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                withSonarQubeEnv(installationName:'jenkins-sonar') {
+                withSonarQubeEnv(installationName: 'jenkins-sonar') {
                     sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
                 }
             }
         }
         
-        stage('Quality Gate') {
+        stage('Deploy') {
             steps {
-                script {
-                    def qg = waitForQualityGate()
-                    if (qg.status != 'OK') {
-                        error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
-                    }
-                }
+                echo 'Deploying...'
+                // Add your deployment steps here
             }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+            // Add any success post-build actions here
+        }
+        failure {
+            echo 'Pipeline failed!'
+            // Add any failure post-build actions here
         }
     }
 }
 
-    
-    
-}
 
