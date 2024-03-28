@@ -1,38 +1,37 @@
 pipeline {
     agent any
     
+    environment {
+        SONAR_TOKEN = credentials('jenkins-sonar')
+    }
+    
     stages {
         stage('Checkout') {
             steps {
-                // Checkout your source code from your repository
+                echo 'Checking out source code...'
                 git 'https://github.com/hamzalazigheb/elite-odoo'
             }
         }
         
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                // Example: Maven build
-                sh 'mvn clean install'
+                echo 'Installing dependencies...'
+                sh 'npm install'
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                echo 'Running tests...'
+                sh 'npm test'
             }
         }
         
         stage('SonarQube Analysis') {
             steps {
-                // Run SonarQube analysis
-                script {
-                    def scannerHome = tool 'sonarqube_scanner'
-                    withSonarQubeEnv('SonarQube Server') {
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-        
-        stage('Quality Gate') {
-            steps {
-                // Wait for SonarQube analysis to complete and check Quality Gate status
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate()
+                echo 'Running SonarQube analysis...'
+                withSonarQubeEnv('SonarQube Server') {
+                    sh 'sonar-scanner -Dsonar.login=$SONAR_TOKEN'
                 }
             }
         }
@@ -40,15 +39,16 @@ pipeline {
     
     post {
         always {
-            // Clean up temporary files, etc.
+            echo 'Cleaning up...'
         }
         
         success {
-            // Actions to perform when the pipeline succeeds
+            echo 'Pipeline succeeded!'
         }
         
         failure {
-            // Actions to perform when the pipeline fails
+            echo 'Pipeline failed!'
         }
     }
 }
+
