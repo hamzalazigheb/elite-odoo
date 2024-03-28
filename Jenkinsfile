@@ -2,57 +2,53 @@ pipeline {
     agent any
     
     environment {
-        // Define SonarQube token
         SONAR_TOKEN = credentials('jenkins-sonar')
+        NODEJS_HOME = tool 'nodejs'
     }
     
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out source code...'
-                git 'https://github.com/hamzalazigheb/elite-odoo.git'
+                git 'https://github.com/hamzalazigheb/elite-odoo'
             }
         }
         
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Building...'
-                sh './mvnw clean package'
+                echo 'Installing dependencies...'
+                sh 'npm install'
             }
         }
         
         stage('Run Tests') {
             steps {
                 echo 'Running tests...'
-                // Add your test execution steps here
+                sh 'npm test'
             }
         }
         
         stage('SonarQube Analysis') {
             steps {
                 echo 'Running SonarQube analysis...'
-                withSonarQubeEnv(installationName: 'jenkins-sonar') {
-                    sh './mvnw clean org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.0.2155:sonar'
+                withSonarQubeEnv('SonarQube Server') {
+                    sh "${NODEJS_HOME}/bin/node sonar-scanner -Dsonar.login=$SONAR_TOKEN"
                 }
-            }
-        }
-        
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deployment steps here
             }
         }
     }
     
     post {
+        always {
+            echo 'Cleaning up...'
+        }
+        
         success {
             echo 'Pipeline succeeded!'
-            // Add any success post-build actions here
         }
+        
         failure {
             echo 'Pipeline failed!'
-            // Add any failure post-build actions here
         }
     }
 }
