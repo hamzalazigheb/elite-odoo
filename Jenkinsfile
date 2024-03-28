@@ -2,6 +2,7 @@ pipeline {
     agent any
     
     options {
+        // Define SonarQube token
         SONAR_TOKEN = credentials('jenkins-sonar')
     }
     
@@ -35,7 +36,20 @@ pipeline {
                 }
             }
         }
+        
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate()
+                    if (qg.status != 'OK') {
+                        error "Pipeline aborted due to Quality Gate failure: ${qg.status}"
+                    }
+                }
+            }
+        }
     }
+}
+
     
     
 }
