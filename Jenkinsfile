@@ -1,7 +1,7 @@
 pipeline {
     agent any
     
-    options {
+    environment {
         // Define SonarQube token
         SONAR_TOKEN = credentials('jenkins-sonar')
     }
