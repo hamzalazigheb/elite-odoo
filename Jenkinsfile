@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        SONAR_TOKEN = credentials('sonarqube_token')
+        SONAR_TOKEN = credentials('jenkins-sonar')
         MAVEN_HOME = tool 'maven'
     }
     
