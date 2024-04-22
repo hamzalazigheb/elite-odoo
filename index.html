@@ -95,6 +95,8 @@
                 </div>
             </div>
         </div>
+        <div id="outputImage"></div>
+
     </section>
 
 
@@ -146,29 +148,47 @@
     <script src="assets/js/main.js"></script>
 
     <!-- Custom JavaScript for Form Submission -->
-    <script>
-        function submitForm() {
-            const urlInput = document.getElementById("urlInput").value;
-            const data = { urlInput };
+    <!-- Add this script at the end of your HTML body -->
+<!-- Add an empty div to hold the image -->
+<img id="outputImage" src="" alt="Output Image">
+<script>
+    function submitForm() {
+        const urlInput = document.getElementById("urlInput").value;
+        const data = { urlInput };
 
-            fetch('/submit-form', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response from server:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        fetch('/submit-form', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response from server:', data);
 
-            return false; // Prevent default form submission
-        }
-    </script>
+            // Decode base64 string to binary image data
+            const imageData = atob(data.imageData);
+
+            // Create a Blob object from the binary image data
+            const blob = new Blob([new Uint8Array(imageData)], { type: 'image/png' });
+
+            // Create a data URL representing the image
+            const imageUrl = URL.createObjectURL(blob);
+
+            // Display the image in an img element
+            const imageElement = document.getElementById('outputImage');
+            imageElement.src = imageUrl;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        return false; // Prevent default form submission
+    }
+</script>
+
+
 
 
 </body>

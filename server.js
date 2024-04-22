@@ -49,7 +49,7 @@ app.post('/submit-form', async (req, res) => {
         console.log('Jenkins job triggered successfully:', response.data);
 
         // Execute Python script
-        const pythonScriptPath = '/home/hamzalazigheb/Desktop/hamza'; // Path to your Python script
+        const pythonScriptPath = '/home/hamzalazigheb/Desktop/hamza/test.py'; // Path to your Python script
         const pythonProcess = spawn('python3', [pythonScriptPath, 'arguments']);
 
         let imageData = Buffer.alloc(0);
@@ -66,28 +66,13 @@ app.post('/submit-form', async (req, res) => {
         pythonProcess.on('close', (code) => {
             console.log(`Python script process exited with code ${code}`);
 
-            // Write the image data to a temporary file
-            const tempImagePath = '/tmp/output_image.png';
-            fs.writeFile(tempImagePath, imageData, (err) => {
-                if (err) {
-                    console.error('Error writing image file:', err);
-                    return res.status(500).json({ error: 'Failed to save image file' });
-                }
-
-                // Send the image file back to the client
-                res.sendFile(tempImagePath, (err) => {
-                    if (err) {
-                        console.error('Error sending image file:', err);
-                        return res.status(500).json({ error: 'Failed to send image file' });
-                    }
-
-                    // Cleanup: delete the temporary image file
-                    fs.unlink(tempImagePath, (err) => {
-                        if (err) {
-                            console.error('Error deleting temporary image file:', err);
-                        }
-                    });
-                });
+            // Send the image data back to the client
+            res.json({
+                message: 'Data received successfully!',
+                data: urlInput,
+                jenkinsResponse: response.data,
+                // Convert image data to base64 and send it to the client
+                imageData: imageData.toString('base64')
             });
         });
     } catch (error) {
