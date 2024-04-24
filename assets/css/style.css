@@ -1003,6 +1003,37 @@ section {
   color: #fff;
   transition: 0.3s;
 }
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+  z-index: 9999; /* Ensure it's above other elements */
+  display: none; /* Initially hidden */
+}
+
+/* Style the preloader spinner */
+#loader::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px; /* Center the spinner */
+  border: 4px solid #f3f3f3; /* Light grey border */
+  border-top: 4px solid #3498db; /* Blue border on top */
+  border-radius: 50%;
+  animation: spin 1s linear infinite; /* Rotate the spinner */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .portfolio .portfolio-item .portfolio-info .preview-link:hover,
 .portfolio .portfolio-item .portfolio-info .details-link:hover {

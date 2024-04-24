@@ -49,7 +49,7 @@ app.post('/submit-form', async (req, res) => {
         console.log('Jenkins job triggered successfully:', response.data);
 
         // Execute Python script
-        const pythonScriptPath = '/home/hamzalazigheb/Desktop/elite-odoo/test.py'; // Path to your Python script
+        const pythonScriptPath = '/home/hamzalazigheb/Desktop/hamza/test.py'; // Path to your Python script
         const pythonProcess = spawn('python3', [pythonScriptPath, 'arguments']);
 
         let imageData = Buffer.alloc(0);
@@ -84,4 +84,5 @@ app.post('/submit-form', async (req, res) => {
 // Start the Express server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
+
 });

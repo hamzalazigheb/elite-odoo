@@ -65,7 +65,7 @@
             <nav id="navbar" class="navbar">
                 <ul>
                     <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-                    <li><a class="nav-link scrollto" href="#about">Abouut</a></li>
+                    <li><a class="nav-link scrollto" href="#about">About</a></li>
                 </ul>
                 <i class="bi bi-list mobile-nav-toggle"></i>
             </nav><!-- .navbar -->
@@ -147,11 +147,9 @@
     <!-- Your Custom Script -->
     <script src="assets/js/main.js"></script>
 
-    <!-- Custom JavaScript for Form Submission -->
-    <!-- Add this script at the end of your HTML body -->
-<!-- Add an empty div to hold the image -->
-<img id="outputImage" src="" alt="Output Image">
-<script>
+   
+    <img class="outputImage" src="your_image_url.jpg" style="width: 700px;" alt="Output Image">
+    <script>
     function submitForm() {
         const urlInput = document.getElementById("urlInput").value;
         const data = { urlInput };
@@ -175,10 +173,10 @@
 
             // Create a data URL representing the image
             const imageUrl = URL.createObjectURL(blob);
-
+            console.log('image:', imageUrl);
             // Display the image in an img element
-            const imageElement = document.getElementById('outputImage');
-            imageElement.src = imageUrl;
+            const imageElement = document.querySelector('.outputImage');
+            imageElement.src = './test.png';
         })
         .catch(error => {
             console.error('Error:', error);
