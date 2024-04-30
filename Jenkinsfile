@@ -7,7 +7,7 @@ pipeline {
                 // Run SonarQube analysis
                 withSonarQubeEnv('sonarqube-server') {
                     // You may need to adjust the paths accordingly
-                    sh 'sonar-scanner -Dsonar.projectKey=website -Dsonar.sources=./addons'
+                    sh 'sonar-scanner -Dsonar.projectKey=website'
                 }
             }
         }
