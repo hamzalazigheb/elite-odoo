@@ -8,6 +8,17 @@ pipeline {
     }
 
     stages {
+        stage('Clone Repository') {
+            steps {
+                script {
+                    if (params.REPO_URL == '') {
+                        error "Git repository URL not provided."
+                    }
+                    // Clone repository
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: params.REPO_URL]]])
+                }
+            }
+        }
         stage('Create SonarQube Project') {
             steps {
                 script {
@@ -25,19 +36,6 @@ pipeline {
                 }
             }
         }
-        stage('Clone Repository and Run Analysis') {
-            steps {
-                script {
-                    if (params.REPO_URL == '') {
-                        error "Git repository URL not provided."
-                    }
-                    // Clone repository
-                    checkout scm
-                    // Run SonarQube analysis
-                    // Adjust this command based on your project and SonarQube setup
-                    sh "sonar-scanner -Dsonar.projectKey=${params.SONAR_PROJECT_KEY}"
-                }
-            }
-        }
     }
 }
+
