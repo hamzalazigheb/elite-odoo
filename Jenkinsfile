@@ -32,7 +32,7 @@ pipeline {
                     // Use SonarQube Web API to create a new project
                     // You'll need to authenticate and construct the appropriate API call
                     // Example:
-                    sh "curl -X POST -u admin:admin 'https://22d8-196-179-220-246.ngrok-free.app/api/projects/create?name=${params.SONAR_PROJECT_NAME}&project=${params.SONAR_PROJECT_KEY}'"
+                    sh "curl -X POST -u admin:12341234 'https://22d8-196-179-220-246.ngrok-free.app/api/projects/create?name=${params.SONAR_PROJECT_NAME}&project=${params.SONAR_PROJECT_KEY}'"
                 }
             }
         }
