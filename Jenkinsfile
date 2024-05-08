@@ -42,10 +42,10 @@ pipeline {
             steps {
                 script {
                     // Retrieve SonarScanner tool
-                    def scannerHome = tool 'sonar-server';
+                    def scannerHome = tool 'sonar-server'; // Correct tool name
                     
                     // Run SonarQube analysis
-                    withSonarQubeEnv(sonar-server) {
+                    withSonarQubeEnv('sonarqube-server') { // Correct SonarQube server name
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
@@ -53,5 +53,4 @@ pipeline {
         }
     }
 }
-
 
