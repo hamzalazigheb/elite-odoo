@@ -45,7 +45,7 @@ pipeline {
                     def scannerHome = tool 'SonarScanner';
                     
                     // Run SonarQube analysis
-                    withSonarQubeEnv() {
+                    withSonarQubeEnv(sonar-server) {
                         sh "${scannerHome}/bin/sonar-scanner"
                     }
                 }
