@@ -8,7 +8,7 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Git Clone') {
             steps {
                 script {
                     if (params.REPO_URL == '') {
@@ -19,7 +19,8 @@ pipeline {
                 }
             }
         }
-        stage('Create and Analyze SonarQube Project') {
+        
+        stage('Create SonarQube Project') {
             steps {
                 script {
                     if (params.SONAR_PROJECT_KEY == '') {
@@ -33,9 +34,20 @@ pipeline {
                     // You'll need to authenticate and construct the appropriate API call
                     // Example:
                     sh "curl -X POST -u admin:12341234 'https://22d8-196-179-220-246.ngrok-free.app/api/projects/create?name=${params.SONAR_PROJECT_NAME}&project=${params.SONAR_PROJECT_KEY}'"
-
+                }
+            }
+        }
+        
+        stage('Run SonarQube Analysis') {
+            steps {
+                script {
+                    // Retrieve SonarScanner tool
+                    def scannerHome = tool 'SonarScanner';
+                    
                     // Run SonarQube analysis
-                    sh "sonar-scanner -Dsonar.projectKey=${params.SONAR_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=https://22d8-196-179-220-246.ngrok-free.app"
+                    withSonarQubeEnv() {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
