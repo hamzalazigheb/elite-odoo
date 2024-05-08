@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('Create SonarQube Project') {
+        stage('Create and Analyze SonarQube Project') {
             steps {
                 script {
                     if (params.SONAR_PROJECT_KEY == '') {
@@ -33,9 +33,13 @@ pipeline {
                     // You'll need to authenticate and construct the appropriate API call
                     // Example:
                     sh "curl -X POST -u admin:12341234 'https://22d8-196-179-220-246.ngrok-free.app/api/projects/create?name=${params.SONAR_PROJECT_NAME}&project=${params.SONAR_PROJECT_KEY}'"
+
+                    // Run SonarQube analysis
+                    sh "sonar-scanner -Dsonar.projectKey=${params.SONAR_PROJECT_KEY} -Dsonar.sources=. -Dsonar.host.url=https://22d8-196-179-220-246.ngrok-free.app"
                 }
             }
         }
     }
 }
+
 
