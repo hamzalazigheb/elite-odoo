@@ -37,19 +37,16 @@ pipeline {
             }
         }
         
-        stage('Run SonarQube Analysis') {
-            steps {
-                script {
-                    // Retrieve SonarScanner tool
-                    def scannerHome = tool 'sonar-scanner';
-                    
-                    // Run SonarQube analysis
-                    withSonarQubeEnv() {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${env.SONAR_PROJECT_KEY}"
-                    }
-                }
+      stage('Run SonarQube Analysis') {
+    steps {
+        script {
+            // Retrieve SonarScanner tool
+            def scannerHome = tool 'sonar-server'; // Correct tool name
+            
+            // Run SonarQube analysis
+            withSonarQubeEnv('sonarqube-server') { // Correct SonarQube server name
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${env.SONAR_PROJECT_KEY}"
             }
         }
     }
 }
-
