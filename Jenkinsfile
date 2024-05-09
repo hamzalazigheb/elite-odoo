@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     if (params.REPO_URL == '') {
-                        error "Git repository URL not provided."
+                        error "Git repository URL not provided."   
                     }
                     // Clone repository
                     checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: params.REPO_URL]]])
