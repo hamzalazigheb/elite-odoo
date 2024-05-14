@@ -31,24 +31,55 @@
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script>
-        function submitForm() {
-            var urlInput = document.getElementById('urlInput');
-            var errorMessage = document.querySelector('.invalid-feedback');
-
+        function validateForm() {
+            const repoUrl = document.getElementById("repoUrl").value;
+            const sonarProjectName = document.getElementById("sonarProjectName").value;
+            const errorMessage = document.getElementById('invalidFeedback');
+    
             // Regular expression for a valid GitHub repository URL
-            var githubRepoRegex = /^(https:\/\/github\.com\/)[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/;
-
-            if (githubRepoRegex.test(urlInput.value)) {
-                // Valid GitHub repository URL
+            const githubRepoRegex = /^(https:\/\/github\.com\/)[\w-]+\/[\w-]+$/i;
+    
+            if (githubRepoRegex.test(repoUrl) && sonarProjectName.trim() !== "") {
+                // Valid inputs
                 errorMessage.style.display = 'none';
-                // Proceed with form submission or further actions
-                // For example: document.getElementById('gitForm').submit();
+                return true;
             } else {
-                // Invalid GitHub repository URL
+                // Invalid inputs
                 errorMessage.style.display = 'block';
+                return false;
             }
         }
+    
+        function submitForm() {
+            const isValid = validateForm();
+            if (!isValid) return;
+    
+            const repoUrl = document.getElementById("repoUrl").value;
+            const sonarProjectName = document.getElementById("sonarProjectName").value;
+            const data = { urlInput: repoUrl, sonarProjectName };
+    
+            fetch('/submit-form', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response from server:', data);
+                // Handle the server response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    
+            return false; // Prevent default form submission
+        }
     </script>
+    <div id="invalidFeedback" class="invalid-feedback" style="display: none;">Invalid input. Please enter a valid GitHub repository URL and a Sonar Project Name.</div>
+
+    
 
 </head>
 
@@ -78,16 +109,23 @@
                 <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
                     <h1>" Time to test the code! Share your Odoo Project URL and let the magic begin. 🌟 "</h1>
                     <form class="needs-validation" novalidate id="gitForm">
+                        <!-- Repo URL input field -->
                         <div class="mb-3">
-                            <label for="urlInput" class="form-label" style="color: white;">Enter your Git Repository :</label>
-                            <div class="input-group">
-                                <input type="url" class="form-control" id="urlInput" name="urlInput" placeholder="https://github.com/username/repository-name" required>
-                                <button type="button" class="btn btn-primary btn-analyse" onclick="submitForm()">Analyse</button>
-                            </div>
+                            <label for="repoUrl" class="form-label" style="color: white;">Enter your Git Repository URL:</label>
+                            <input type="url" class="form-control" id="repoUrl" name="repoUrl" placeholder="https://github.com/username/repository-name" required>
                             <div class="invalid-feedback">
                                 Please provide a valid GitHub repository URL.
                             </div>
                         </div>
+
+                        <!-- Sonar Project Name input field -->
+                        <div class="mb-3">
+                            <label for="sonarProjectName" class="form-label" style="color: white;">Enter Sonar Project Name:</label>
+                            <input type="text" class="form-control" id="sonarProjectName" name="sonarProjectName" required>
+                        </div>
+
+                        <!-- Analyse button -->
+                        <button type="button" class="btn btn-primary btn-analyse" onclick="submitForm()">Analyse</button>
                     </form>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-in" data-aos-delay="200">
@@ -149,45 +187,6 @@
 
    
     <img class="outputImage" src="your_image_url.jpg" style="width: 700px;" alt="Output Image">
-    <script>
-    function submitForm() {
-        const urlInput = document.getElementById("urlInput").value;
-        const data = { urlInput };
-
-        fetch('/submit-form', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response from server:', data);
-
-            // Decode base64 string to binary image data
-            const imageData = atob(data.imageData);
-
-            // Create a Blob object from the binary image data
-            const blob = new Blob([new Uint8Array(imageData)], { type: 'image/png' });
-
-            // Create a data URL representing the image
-            const imageUrl = URL.createObjectURL(blob);
-            console.log('image:', imageUrl);
-            // Display the image in an img element
-            const imageElement = document.querySelector('.outputImage');
-            imageElement.src = './test.png';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-        return false; // Prevent default form submission
-    }
-</script>
-
-
-
 
 </body>
 
