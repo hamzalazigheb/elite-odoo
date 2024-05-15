@@ -1,0 +1,11 @@
+# Example Requirements File with Critical Issues
+
+# Critical Issue 1: Missing Version Specifier
+requests
+
+# Critical Issue 2: Conflicting Dependencies
+django==2.2
+flask==1.1
+
+# Critical Issue 3: Insecure Package
+insecure-package
