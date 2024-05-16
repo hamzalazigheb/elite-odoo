@@ -1,18 +1,55 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
-
+const fs = require('fs');
 const app = express();
+const WebSocket = require('ws').Server;
+var WebSocketClient = require('websocket').client;
+
 const port = 5500;
+const server = new WebSocket({
+    server: app.listen(port, () => {
+        console.log(`Server running at http://localhost:${port}`);
+    })
+});
 
 // Parse JSON bodies (as sent by API clients)
+app.use(express.static(__dirname + '/'));
 app.use(bodyParser.json());
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'ejs');
+app.set('views', __dirname);
+
+let ws = [];
+
+server.on('connection',(socket)=>{
+    ws.push(socket);
+    socket.on('message', function(msg) {
+        try{ws.forEach(i=>i.send(msg.toString()))}catch(e){}
+    });
+})
 
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
+
+app.get('/show-data',async(req,res)=>{
+    var data = await  new Promise((res,_)=>{
+        fs.readFile('data.json',{encoding:'utf-8'},(_,data)=>res(data));
+    });
+    res.render("data.html",{data})
+})
+
+app.post('/report', async (req,res)=>{
+    console.log("going to send data to ws");
+    var client = new WebSocketClient();
+    client.connect('ws://localhost:5500/'); 
+    client.on('connect',(connection)=>connection.send(JSON.stringify(req.body),(er)=>console.log(er)))
+    fs.writeFile('data.json', JSON.stringify(req.body), err => {});
+    res.send();
+})
 
 app.post('/submit-form', async (req, res) => {
     const { urlInput, sonarProjectName } = req.body; // Destructure request body
@@ -54,7 +91,3 @@ app.post('/submit-form', async (req, res) => {
     }
 });
 
-// Start the Express server
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
