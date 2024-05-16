@@ -1,0 +1,65 @@
+# Example Requirements File with Critical, High, and Medium Priority Issues
+
+# Critical Issues:
+# 1. Missing Version Specifier for requests library
+requests
+
+# 2. Conflicting Dependencies between Django and Flask
+django==2.2
+flask==1.1
+
+# 3. Insecure Package with known vulnerabilities
+insecure-package
+
+# 4. Package with deprecated functionality
+deprecated-package>=1.0,<2.0
+
+# 5. Package with a license incompatible with project requirements
+proprietary-library
+
+# 6. Package causing application crashes
+crash-prone-package>=1.0,<2.0
+
+# 7. Package with critical memory leak issues
+memory-leak-library==1.0.0
+
+# 8. Package known for severe performance degradation
+performance-degradation-package>=1.0,<2.0
+
+# 9. Package with known security exploits
+exploitable-package>=2.0,<3.0
+
+# 10. Package leading to data corruption
+data-corruption-package>=1.0,<2.0
+
+# 11. Package with critical installation issues
+install-issue-package>=1.0,<2.0
+
+# 12. Package with critical compatibility issues with OS
+os-incompatibility-package==1.0
+
+# 13. Package causing conflicts with core system libraries
+system-conflict-package>=1.0,<2.0
+
+# 14. Package that fails under high concurrency
+concurrency-issue-package>=1.0,<2.0
+
+# 15. Package with a critical bug in a fundamental feature
+critical-bug-package>=1.0,<2.0
+
+# High Priority Issues:
+# 16. Outdated Package with security patches available
+vulnerable-package<=1.2.3
+
+# 17. Package with excessive memory usage
+memory-hogging-library>=2.0,<3.0
+
+# 18. Package with performance bottlenecks
+slow-package>=3.0,<4.0
+
+# Medium Priority Issues:
+# 19. Package with outdated documentation
+outdated-docs-package>=1.0,<2.0
+
+# 20. Package with intermittent network connectivity issues
+network-flaky-library>=2.0,<3.0
