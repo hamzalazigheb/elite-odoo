@@ -31,18 +31,53 @@
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script>
-        const exampleSocket = new WebSocket("ws://localhost:5500/");
+       const exampleSocket = new WebSocket("ws://localhost:5500/");
+       exampleSocket.onmessage = (data) => {
+    const parsedData = JSON.parse(data.data);
+    const jsonDataElement = document.querySelector(".vulnerability-list");
 
-        exampleSocket.onmessage = (data)=>{
-            var parsedData = JSON.parse(data.data);
-            const jsonDataElement = document.querySelector("#jsonData");
-            console.log(parsedData);
-            jsonDataElement.innerHTML = data.data;
-            document.querySelector('#maincontent').classList.remove("row")
-                document.querySelector('#maincontent').style.display = 'none';
+    parsedData.vulnerabilities.forEach((vulnerability, index) => {
+        const vulnerabilityElement = createVulnerabilityElement(vulnerability, index);
+        jsonDataElement.appendChild(vulnerabilityElement);
+    });
+};
 
-            
-        }
+function createVulnerabilityElement(vulnerability, index) {
+    // Determine color based on severity
+    let color;
+    if (vulnerability.severity === "High") {
+        color = "#dc3545"; // Red for High severity
+    } else if (vulnerability.severity === "Medium") {
+        color = "#ffc107"; // Yellow for Medium severity
+    } else {
+        color = "#17a2b8"; // Blue for Low severity (or other)
+    }
+
+    // Create the vulnerability element
+    const vulnerabilityElement = document.createElement("div");
+    vulnerabilityElement.classList.add("vulnerability");
+    vulnerabilityElement.style.background = color;
+    vulnerabilityElement.innerHTML = `
+        <h2>${vulnerability.title}</h2>
+        <p><strong>ID:</strong> ${vulnerability.id}</p>
+        <p><strong>Severity:</strong> ${vulnerability.severity}</p>
+        <p><strong>CVSS Score:</strong> ${vulnerability.cvssScore}</p>
+        <p><strong>Module Name:</strong> ${vulnerability.moduleName}</p>
+        <p><strong>Malicious:</strong> ${vulnerability.malicious ? 'Yes' : 'No'}</p>
+        <p><strong>Is Disputed:</strong> ${vulnerability.isDisputed ? 'Yes' : 'No'}</p>
+        <h3>References:</h3>
+        <ul>
+            ${vulnerability.references.map(reference => `<li><a href="${reference.url}">${reference.title}</a></li>`).join('')}
+        </ul>
+    `;
+    return vulnerabilityElement;
+}
+
+
+// Hide the main content
+document.querySelector('#maincontent').style.display = 'none';
+
+
 
         function validateForm() {
             const repoUrl = document.getElementById("repoUrl").value;
@@ -116,11 +151,12 @@
         </div>
     </header><!-- End Header -->
     
-
     <section id="hero" class="d-flex align-items-center">
         <div class="container">
-            <pre id="jsonData"></pre>
-
+            <div id="jsonData" class="json-data">
+                <h2>Vulnerability Details</h2>
+                <div class="vulnerability-list"></div>
+            </div>
             <div class="row" id="maincontent">
                 <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
                     <h1>" Time to test the code! Share your Odoo Project URL and let the magic begin. 🌟 "</h1>
