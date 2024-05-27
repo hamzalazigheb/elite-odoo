@@ -34,6 +34,10 @@
        const exampleSocket = new WebSocket("ws://localhost:5500/");
        exampleSocket.onmessage = (data) => {
     const parsedData = JSON.parse(data.data);
+    const headerContent = document.getElementById("maincontent");
+    const vulnerabilityContent = document.getElementById("jsonData");
+    headerContent.classList.add("d-none");
+    vulnerabilityContent.classList.remove("d-none")
     const jsonDataElement = document.querySelector(".vulnerability-list");
 
     parsedData.vulnerabilities.forEach((vulnerability, index) => {
@@ -45,18 +49,18 @@
 function createVulnerabilityElement(vulnerability, index) {
     // Determine color based on severity
     let color;
-    if (vulnerability.severity === "High") {
-        color = "#dc3545"; // Red for High severity
-    } else if (vulnerability.severity === "Medium") {
-        color = "#ffc107"; // Yellow for Medium severity
-    } else {
-        color = "#17a2b8"; // Blue for Low severity (or other)
-    }
+    
 
     // Create the vulnerability element
     const vulnerabilityElement = document.createElement("div");
-    vulnerabilityElement.classList.add("vulnerability");
-    vulnerabilityElement.style.background = color;
+    vulnerabilityElement.classList.add("card","alert");
+    if (vulnerability.severity === "High") {
+        vulnerabilityElement.classList.add("alert-danger"); // Red for High severity
+    } else if (vulnerability.severity === "Medium") {
+        vulnerabilityElement.classList.add("alert-warning"); // Yellow for Medium severity
+    } else {
+        vulnerabilityElement.classList.add("alert-info"); // Blue for Low severity (or other)
+    }
     vulnerabilityElement.innerHTML = `
         <h2>${vulnerability.title}</h2>
         <p><strong>ID:</strong> ${vulnerability.id}</p>
@@ -75,7 +79,7 @@ function createVulnerabilityElement(vulnerability, index) {
 
 
 // Hide the main content
-document.querySelector('#maincontent').style.display = 'none';
+//document.querySelector('#maincontent').style.display = 'none';
 
 
 
@@ -153,9 +157,9 @@ document.querySelector('#maincontent').style.display = 'none';
     
     <section id="hero" class="d-flex align-items-center">
         <div class="container">
-            <div id="jsonData" class="json-data">
-                <h2>Vulnerability Details</h2>
-                <div class="vulnerability-list"></div>
+            <div id="jsonData" class="json-data d-none">
+                <h2 class="text-center text-white">Vulnerability Details</h2>
+                <div class="vulnerability-list d-flex gap-3"></div>
             </div>
             <div class="row" id="maincontent">
                 <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
