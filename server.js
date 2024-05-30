@@ -47,9 +47,11 @@ app.post('/report', async (req,res)=>{
     var client = new WebSocketClient();
     client.connect('ws://localhost:5500/'); 
     client.on('connect',(connection)=>connection.send(JSON.stringify(req.body),(er)=>console.log(er)))
-    fs.writeFile('data.json', JSON.stringify(req.body), err => {});
+    // fs.writeFile('data.json', JSON.stringify(req.body), err => {});
     res.send();
 })
+
+app.get('/ping',(req,res)=>res.send("pong"))
 
 app.post('/submit-form', async (req, res) => {
     const { urlInput, sonarProjectName } = req.body; // Destructure request body

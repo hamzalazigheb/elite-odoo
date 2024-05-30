@@ -14,7 +14,9 @@
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Jost:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Jost:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
 
     <!-- Vendor CSS Files -->
     <link href="assets/vendor/aos/aos.css" rel="stylesheet">
@@ -31,37 +33,91 @@
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script>
-       const exampleSocket = new WebSocket("ws://localhost:5500/");
-       exampleSocket.onmessage = (data) => {
-    const parsedData = JSON.parse(data.data);
-    const headerContent = document.getElementById("maincontent");
-    const vulnerabilityContent = document.getElementById("jsonData");
-    headerContent.classList.add("d-none");
-    vulnerabilityContent.classList.remove("d-none")
-    const jsonDataElement = document.querySelector(".vulnerability-list");
+        let isLoading = false;
+        const exampleSocket = new WebSocket("ws://localhost:5500/");
+        exampleSocket.onmessage = (data) => {
+            const parsedData = JSON.parse(data.data);
+            const headerContent = document.getElementById("maincontent");
+            const vulnerabilityContent = document.getElementById("allData");
+            headerContent.classList.add("d-none");
+            vulnerabilityContent.classList.remove("d-none")
 
-    parsedData.vulnerabilities.forEach((vulnerability, index) => {
-        const vulnerabilityElement = createVulnerabilityElement(vulnerability, index);
-        jsonDataElement.appendChild(vulnerabilityElement);
-    });
-};
+            if (parsedData.intermediaryMessage) {
+                // handle intermediary message
+                const myContainer = document.querySelector("#my_container")
+                const elementContentToAdd = `
+                  <div class="my_v-stepper">
+                    <div class="my_circle"></div>
+                    <div class="my_line"></div>
+                  </div>
+              
+                  <div class="my_content">
+                    ${parsedData.message}
+                  </div>
+                `
 
-function createVulnerabilityElement(vulnerability, index) {
-    // Determine color based on severity
-    let color;
-    
+                if (myContainer.childNodes.length > 0) {
+                    myContainer.lastChild?.classList?.remove("my_active");
+                    myContainer.lastChild?.classList?.add("my_completed");
+                }
+                const elemtnToAdd = document.createElement("div");
+                elemtnToAdd.classList.add("my_step");
+                elemtnToAdd.classList.add("my_active");
+                elemtnToAdd.innerHTML = elementContentToAdd;
 
-    // Create the vulnerability element
-    const vulnerabilityElement = document.createElement("div");
-    vulnerabilityElement.classList.add("card","alert");
-    if (vulnerability.severity === "High") {
-        vulnerabilityElement.classList.add("alert-danger"); // Red for High severity
-    } else if (vulnerability.severity === "Medium") {
-        vulnerabilityElement.classList.add("alert-warning"); // Yellow for Medium severity
-    } else {
-        vulnerabilityElement.classList.add("alert-info"); // Blue for Low severity (or other)
-    }
-    vulnerabilityElement.innerHTML = `
+                myContainer.appendChild(elemtnToAdd);
+
+            } else if (parsedData.isSonarData) {
+                // handle sonar data
+                const codeANalysisResultElement = document.querySelector(".code-analysis-result");
+                codeANalysisResultElement.classList.remove("d-none");
+                const divContent = `
+                <h2>${parsedData["Nom du projet"]}</h2>
+        <p><strong>Status:</strong> ${parsedData.Statut}</p>
+        <p><strong>Last analysis:</strong> ${parsedData["Dernière analyse"]}</p>
+        <p><strong>Lines of code:</strong> ${parsedData["Lignes de code"]}</p>
+        <p><strong>Security:</strong> ${parsedData.Security}</p>
+        <p><strong>Reliability:</strong> ${parsedData.Reliability}</p>
+        <p><strong>Maintenability:</strong> ${parsedData.Maintenability}</p>
+        <p><strong>Hotspots Reviewed:</strong> ${parsedData["Hotspots Reviewed"]}</p>
+        <p><strong>Couverture:</strong> ${parsedData["Couverture"]}</p>
+        <p><strong>Duplication:</strong> ${parsedData["Duplication"]}</p>
+                `
+
+                const element = document.createElement("div");
+                element.classList.add("card","info");
+
+                element.innerHTML = divContent;
+
+                codeANalysisResultElement.appendChild(element);
+            } else {
+                const jsonDataElement = document.querySelector(".vulnerability-list");
+                jsonDataElement.classList.remove("d-none");
+                parsedData.vulnerabilities?.forEach((vulnerability,
+                    index) => {
+                    const vulnerabilityElement = createVulnerabilityElement(vulnerability, index);
+                    jsonDataElement.appendChild(vulnerabilityElement);
+                });
+            }
+
+        };
+
+        function createVulnerabilityElement(vulnerability, index) {
+            // Determine color based on severity
+            let color;
+
+
+            // Create the vulnerability element
+            const vulnerabilityElement = document.createElement("div");
+            vulnerabilityElement.classList.add("card", "alert");
+            if (vulnerability.severity === "High") {
+                vulnerabilityElement.classList.add("alert-danger"); // Red for High severity
+            } else if (vulnerability.severity === "Medium") {
+                vulnerabilityElement.classList.add("alert-warning"); // Yellow for Medium severity
+            } else {
+                vulnerabilityElement.classList.add("alert-info"); // Blue for Low severity (or other)
+            }
+            vulnerabilityElement.innerHTML = `
         <h2>${vulnerability.title}</h2>
         <p><strong>ID:</strong> ${vulnerability.id}</p>
         <p><strong>Severity:</strong> ${vulnerability.severity}</p>
@@ -74,12 +130,12 @@ function createVulnerabilityElement(vulnerability, index) {
             ${vulnerability.references.map(reference => `<li><a href="${reference.url}">${reference.title}</a></li>`).join('')}
         </ul>
     `;
-    return vulnerabilityElement;
-}
+            return vulnerabilityElement;
+        }
 
 
-// Hide the main content
-//document.querySelector('#maincontent').style.display = 'none';
+        // Hide the main content
+        //document.querySelector('#maincontent').style.display = 'none';
 
 
 
@@ -87,10 +143,10 @@ function createVulnerabilityElement(vulnerability, index) {
             const repoUrl = document.getElementById("repoUrl").value;
             const sonarProjectName = document.getElementById("sonarProjectName").value;
             const errorMessage = document.getElementById('invalidFeedback');
-    
+
             // Regular expression for a valid GitHub repository URL
             const githubRepoRegex = /^(https:\/\/github\.com\/)[\w-]+\/[\w-]+$/i;
-    
+
             if (githubRepoRegex.test(repoUrl) && sonarProjectName.trim() !== "") {
                 // Valid inputs
                 errorMessage.style.display = 'none';
@@ -101,15 +157,16 @@ function createVulnerabilityElement(vulnerability, index) {
                 return false;
             }
         }
-    
+
         function submitForm() {
+            if (isLoading) return;
             const isValid = validateForm();
             if (!isValid) return;
-    
+
             const repoUrl = document.getElementById("repoUrl").value;
             const sonarProjectName = document.getElementById("sonarProjectName").value;
             const data = { urlInput: repoUrl, sonarProjectName };
-    
+
             fetch('/submit-form', {
                 method: 'POST',
                 headers: {
@@ -117,21 +174,29 @@ function createVulnerabilityElement(vulnerability, index) {
                 },
                 body: JSON.stringify(data),
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response from server:', data);
-                // Handle the server response as needed
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    
+                .then(response => response.json())
+                .then(data => {
+                    const buttonContent = document.getElementById("button-content");
+                    buttonContent.classList.add("d-none");
+                    document.getElementById("repoUrl").readOnly = true;
+                    document.getElementById("sonarProjectName").readOnly = true;
+                    const loader = document.getElementById("loader");
+                    loader.classList.remove("d-none");
+
+                    console.log('Response from server:', data);
+                    // Handle the server response as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
             return false; // Prevent default form submission
         }
     </script>
-    <div id="invalidFeedback" class="invalid-feedback" style="display: none;">Invalid input. Please enter a valid GitHub repository URL and a Sonar Project Name.</div>
+    <div id="invalidFeedback" class="invalid-feedback" style="display: none;">Invalid input. Please enter a valid GitHub
+        repository URL and a Sonar Project Name.</div>
 
-    
+
 
 </head>
 
@@ -154,21 +219,37 @@ function createVulnerabilityElement(vulnerability, index) {
             </nav><!-- .navbar -->
         </div>
     </header><!-- End Header -->
-    
+
     <section id="hero" class="d-flex align-items-center">
         <div class="container">
-            <div id="jsonData" class="json-data d-none">
-                <h2 class="text-center text-white">Vulnerability Details</h2>
-                <div class="vulnerability-list d-flex gap-3"></div>
+            <div id="allData" class="d-none">
+                <div class="my_stepper">
+                    <div class="my_container" id="my_container">
+                    </div>
+                </div>
+                <div id="jsonData" class="vulnerability-list d-none">
+                    <h2 class="text-center text-white">Vulnerability Details</h2>
+                    <div class=" d-flex gap-3"></div>
+                </div>
+                <div id="codeAnalysis" class="code-analysis-result d-none">
+                    <h2 class="text-center text-white">Code analysis result</h2>
+                    <div class=" d-flex gap-3">
+
+                    </div>
+                </div>
+
             </div>
             <div class="row" id="maincontent">
-                <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1" data-aos="fade-up" data-aos-delay="200">
+                <div class="col-lg-6 d-flex flex-column justify-content-center pt-4 pt-lg-0 order-2 order-lg-1"
+                    data-aos="fade-up" data-aos-delay="200">
                     <h1>" Time to test the code! Share your Odoo Project URL and let the magic begin. 🌟 "</h1>
                     <form class="needs-validation" novalidate id="gitForm">
                         <!-- Repo URL input field -->
                         <div class="mb-3">
-                            <label for="repoUrl" class="form-label" style="color: white;">Enter your Git Repository URL:</label>
-                            <input type="url" class="form-control" id="repoUrl" name="repoUrl" placeholder="https://github.com/username/repository-name" required>
+                            <label for="repoUrl" class="form-label" style="color: white;">Enter your Git Repository
+                                URL:</label>
+                            <input type="url" class="form-control" id="repoUrl" name="repoUrl"
+                                placeholder="https://github.com/username/repository-name" required>
                             <div class="invalid-feedback">
                                 Please provide a valid GitHub repository URL.
                             </div>
@@ -176,12 +257,22 @@ function createVulnerabilityElement(vulnerability, index) {
 
                         <!-- Sonar Project Name input field -->
                         <div class="mb-3">
-                            <label for="sonarProjectName" class="form-label" style="color: white;">Enter Sonar Project Name:</label>
-                            <input type="text" class="form-control" id="sonarProjectName" name="sonarProjectName" required>
+                            <label for="sonarProjectName" class="form-label" style="color: white;">Enter Sonar Project
+                                Name:</label>
+                            <input type="text" class="form-control" id="sonarProjectName" name="sonarProjectName"
+                                required>
                         </div>
 
                         <!-- Analyse button -->
-                        <button type="button" class="btn btn-primary btn-analyse" onclick="submitForm()">Analyse</button>
+                        <button type="button" class="btn btn-primary btn-analyse" onclick="submitForm()">
+                            <span id="button-content">
+                                Analyse
+                            </span>
+                            <div id="loader" class="d-none">
+                                <div class="spinner-border" role="status">
+                                </div>
+                            </div>
+                        </button>
                     </form>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-in" data-aos-delay="200">
@@ -211,7 +302,13 @@ function createVulnerabilityElement(vulnerability, index) {
                     </div>
                     <div class="col-lg-6 pt-4 pt-lg-0">
                         <p>
-                            we are committed to providing a seamless and efficient testing experience for your Git repositories. Our platform allows you to easily enter your repository and view the results of testing, providing you with valuable insights into the quality and reliability of your code. Our team of experienced professionals is dedicated to ensuring that your testing experience is as smooth and hassle-free as possible. By leveraging our platform, you can confidently test your code and make informed decisions about your development process. Join us today and experience the power of streamlined testing with [Elite Tester]."
+                            we are committed to providing a seamless and efficient testing experience for your Git
+                            repositories. Our platform allows you to easily enter your repository and view the results
+                            of testing, providing you with valuable insights into the quality and reliability of your
+                            code. Our team of experienced professionals is dedicated to ensuring that your testing
+                            experience is as smooth and hassle-free as possible. By leveraging our platform, you can
+                            confidently test your code and make informed decisions about your development process. Join
+                            us today and experience the power of streamlined testing with [Elite Tester]."
                         </p>
                         <a href="#" class="btn-learn-more">Learn More</a>
                     </div>
@@ -222,12 +319,13 @@ function createVulnerabilityElement(vulnerability, index) {
 
     <!-- ======= Footer ======= -->
     <footer id="footer">
-        
+
         <!-- ... existing footer content ... -->
     </footer><!-- End Footer -->
 
     <div id="preloader"></div>
-    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
 
     <!-- Vendor JS Files -->
     <script src="assets/vendor/aos/aos.js"></script>
@@ -241,7 +339,7 @@ function createVulnerabilityElement(vulnerability, index) {
     <!-- Your Custom Script -->
     <script src="assets/js/main.js"></script>
 
-   
+
 
 
 </body>

@@ -379,12 +379,12 @@ h6 {
 --------------------------------------------------------------*/
 #hero {
   width: 100%;
-  height: 80vh;
+  height: fit-content;
   background: #37517e;
 }
 
 #hero .container {
-  padding-top: 72px;
+  /* padding-top: 72px; */
 }
 
 #hero h1 {
@@ -1003,31 +1003,6 @@ section {
   color: #fff;
   transition: 0.3s;
 }
-#loader {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
-  z-index: 9999; /* Ensure it's above other elements */
-  display: none; /* Initially hidden */
-}
-
-/* Style the preloader spinner */
-#loader::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 40px;
-  height: 40px;
-  margin: -20px 0 0 -20px; /* Center the spinner */
-  border: 4px solid #f3f3f3; /* Light grey border */
-  border-top: 4px solid #3498db; /* Blue border on top */
-  border-radius: 50%;
-  animation: spin 1s linear infinite; /* Rotate the spinner */
-}
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -1228,3 +1203,84 @@ section {
     padding-top: 4px;
   }
 }
+
+.my_container {
+  margin-top: 5rem;
+  width: 50%;
+}
+
+.my_step {
+  
+  padding: 10px;
+  
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  
+  background-color: cream;
+}
+
+.my_v-stepper {
+  position: relative;
+/*   visibility: visible; */
+}
+
+
+/* regular step */
+.my_step .my_circle {
+  background-color: white;
+  border: 3px solid gray;
+  border-radius: 100%;
+  width: 20px;    /* +6 for border */
+  height: 20px;
+  display: inline-block;
+}
+
+.my_step .my_line {
+    top: 23px;
+  left: 0.6rem;
+/*   height: 120px; */
+  height: 100%;
+    
+    position: absolute;
+    border-left: 3px solid gray;
+}
+
+.my_step.my_completed .my_circle {
+  visibility: visible;
+  background-color: rgb(6,150,215);
+  border-color: rgb(6,150,215);
+}
+
+.my_step.my_completed .my_line {
+  border-left: 3px solid rgb(6,150,215);
+}
+
+.my_step.my_active .my_circle {
+visibility: visible;
+  border-color: rgb(6,150,215);
+}
+
+.my_step.my_empty .my_circle {
+    visibility: hidden;
+}
+
+.my_step.my_empty .my_line {
+/*     visibility: hidden; */
+/*   height: 150%; */
+  top: 0;
+  height: 150%;
+}
+
+
+.my_step:last-child .my_line {
+  border-left: 3px solid white;
+  z-index: -1; /* behind the circle to completely hide */
+}
+
+.my_content {
+  margin-left: 20px;
+  display: inline-block;
+  color:white;
+}
+
